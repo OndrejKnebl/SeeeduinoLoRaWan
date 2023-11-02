@@ -1,5 +1,5 @@
 /*
-  LoRaWAN.cpp
+  SeeeduinoLoRaWan.cpp
   2013 Copyright (c) Seeed Technology Inc.  All right reserved.
 
   Author: Wayne Weng
@@ -31,7 +31,7 @@
   Modified for LoRa@VSB by Ondřej Knebl, 2. 11. 2023
 */
 
-#include "SeeduinoLoRaWan.h"
+#include "SeeeduinoLoRaWan.h"
 
 
 LoRaWanClass::LoRaWanClass(void)
