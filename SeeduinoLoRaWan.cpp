@@ -31,7 +31,7 @@
   Modified for LoRa@VSB by Ondřej Knebl, 2. 11. 2023
 */
 
-#include "LoRaWan.h"
+#include "SeeduinoLoRaWan.h"
 
 
 LoRaWanClass::LoRaWanClass(void)
