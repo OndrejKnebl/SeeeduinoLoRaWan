@@ -97,6 +97,12 @@ class LoRaWanClass
          */
         void init(void);
 
+        /**
+         *  \brief Set frequency plan Europe 433 MHz (ITU region 1)
+         *  
+         *  \return Return null.
+         */
+        void setEU433(void);
 
         /**
          *  \brief Set frequency plan Europe 863-870 MHz (SF9 for RX2 - recommended)
