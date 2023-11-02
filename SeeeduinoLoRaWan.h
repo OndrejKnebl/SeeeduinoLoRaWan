@@ -1,5 +1,5 @@
 /*
-  LoRaWAN.h
+  SeeeduinoLoRaWan.h
   2013 Copyright (c) Seeed Technology Inc.  All right reserved.
 
   Author: Wayne Weng
@@ -30,8 +30,8 @@
   Modified for LoRa@VSB by Ondřej Knebl, 2. 11. 2023
 */
 
-#ifndef _LORAWAN_H_
-#define _LORAWAN_H_
+#ifndef _SEEEDUINOLORAWAN_H_
+#define _SEEEDUINOLORAWAN_H_
 
 
 #include <Arduino.h>
