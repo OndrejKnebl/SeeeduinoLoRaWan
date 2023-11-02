@@ -50,18 +50,18 @@ void LoRaWanClass::setEU433(void)
 {
     setDataRate(EU433);
 
-    const float EU_868[8] = {868.1, 868.3, 868.5, 867.1, 867.3, 867.5, 867.7, 867.9};
+    const float EU_433[8] = {433.175, 433.375, 433.575, 433.775, 433.975, 434.175, 434.375, 434.575};
 
     for(int i = 0; i < 8; i++)
     {
         if(EU_868[i] != 0)
         {
-            setChannel(i, EU_868[i], DR0, DR5);
+            setChannel(i, EU_433[i], DR0, DR5);
          
         }
     }
     
-    setReceiveWindowSecond(869.525, DR0);
+    setReceiveWindowSecond(434.665, DR0);
     setPower(0);
     setAdaptiveDataRate(true);
     setDutyCycle(true);
