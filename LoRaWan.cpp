@@ -54,7 +54,7 @@ void LoRaWanClass::setEU433(void)
 
     for(int i = 0; i < 8; i++)
     {
-        if(EU_868[i] != 0)
+        if(EU_433[i] != 0)
         {
             setChannel(i, EU_433[i], DR0, DR5);
          
@@ -187,7 +187,7 @@ void LoRaWanClass::setDataRate(_physical_type_t physicalType)
 {
     char cmd[32];
     
-    if(physicalType == EU434)sendCommand("AT+DR=EU433\r\n");
+    if(physicalType == EU433)sendCommand("AT+DR=EU433\r\n");
     else if(physicalType == EU868)sendCommand("AT+DR=EU868\r\n");
     delay(DEFAULT_TIMEWAIT);
     
