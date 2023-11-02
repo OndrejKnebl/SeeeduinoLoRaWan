@@ -9,7 +9,7 @@
  * including, but not limited to, copying, modification and redistribution.
  * NO WARRANTY OF ANY KIND IS PROVIDED.
  * 
- * Hello, LoRa!, 24. 6. 2022
+ * Hello, LoRa!, 2. 11. 2023
  *******************************************************************************/
 
 #include <SeeeduinoLoRaWan.h>
