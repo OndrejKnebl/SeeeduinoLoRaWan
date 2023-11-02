@@ -21,7 +21,7 @@ LoRaWanClass lora;
 #define APP_KEY "00000000000000000000000000000000"
 //---------------------------------------------------
 
-const unsigned TX_INTERVAL = 60;                                // Transmission interval in seconds
+const unsigned TX_INTERVAL = 300;                                // Transmission interval in seconds
 static uint8_t mydata[] = "Hello, LoRa!";
 
 
