@@ -1,6 +1,13 @@
 MIT License
 
-Copyright (c) 2023 OndrejKnebl
+2013 Copyright (c) Seeed Technology Inc.  All right reserved.
+
+Author: Wayne Weng
+Date: 2016-10-17
+
+add rgb backlight fucnction @ 2013-10-15
+
+Modified for LoRa@VSB by Ondřej Knebl, 2. 11. 2023
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
