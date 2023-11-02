@@ -12,7 +12,7 @@
  * Hello, LoRa!, 24. 6. 2022
  *******************************************************************************/
 
-#include <LoRaWan.h>
+#include <SeeeduinoLoRaWan.h>
 LoRaWanClass lora;
 
 //-------------- Here change your keys --------------
