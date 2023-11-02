@@ -1,1 +1,1 @@
-# LoRaWAN
+# Seeeduino LoRaWAN library
