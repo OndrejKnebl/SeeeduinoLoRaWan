@@ -28,7 +28,7 @@
   THE SOFTWARE.1  USA
 
 
-  Modified for LoRa@VSB by Ondřej Knebl, 2. 11. 2023
+  Modified for LoRa@VSB by Ondřej Knebl, 21. 11. 2023
 */
 
 #include "SeeeduinoLoRaWan.h"
@@ -49,6 +49,7 @@ void LoRaWanClass::init(void)
 void LoRaWanClass::setEU433(void)
 {
     setDataRate(EU433);
+    delay(500);
 
     const float EU_433[8] = {433.175, 433.375, 433.575, 433.775, 433.975, 434.175, 434.375, 434.575};
 
@@ -57,7 +58,6 @@ void LoRaWanClass::setEU433(void)
         if(EU_433[i] != 0)
         {
             setChannel(i, EU_433[i], DR0, DR5);
-         
         }
     }
     
@@ -80,6 +80,7 @@ void LoRaWanClass::setEU433(void)
 void LoRaWanClass::setEU868(void)
 {
     setDataRate(EU868);
+    delay(500);
 
     const float EU_868[8] = {868.1, 868.3, 868.5, 867.1, 867.3, 867.5, 867.7, 867.9};
 
@@ -88,7 +89,6 @@ void LoRaWanClass::setEU868(void)
         if(EU_868[i] != 0)
         {
             setChannel(i, EU_868[i], DR0, DR5);
-         
         }
     }
     
@@ -233,7 +233,7 @@ void LoRaWanClass::setChannel(unsigned char channel, float frequency, _data_rate
     char cmd[32];
     
     memset(cmd, 0, 32);
-    sprintf(cmd, "AT+CH=%d,%d.%d,%d,%d\r\n", channel, (short)frequency, short(frequency * 10) % 10, dataRataMin, dataRataMax);
+    sprintf(cmd, "AT+CH=%d,%.3f,%d,%d\r\n", channel, frequency, dataRataMin, dataRataMax);
     sendCommand(cmd);
     loraPrint(DEFAULT_DEBUGTIME);
 }
@@ -454,7 +454,7 @@ void LoRaWanClass::setReceiveWindowFirst(unsigned char channel, float frequency)
     char cmd[32];
     
     memset(cmd, 0, 32);
-    sprintf(cmd, "AT+RXWIN1=%d,%d.%d\r\n", channel, (short)frequency, short(frequency * 10) % 10);
+    sprintf(cmd, "AT+RXWIN1=%d,%.3f\r\n", channel, frequency);
     sendCommand(cmd);
     loraPrint(DEFAULT_DEBUGTIME);
 }
@@ -465,7 +465,7 @@ void LoRaWanClass::setReceiveWindowSecond(float frequency, _data_rate_t dataRate
     char cmd[32];
     
     memset(cmd, 0, 32);
-    sprintf(cmd, "AT+RXWIN2=%d.%d,%d\r\n", (short)frequency, short(frequency * 10) % 10, dataRate);
+    sprintf(cmd, "AT+RXWIN2=%.3f,%d\r\n", frequency, dataRate);
     sendCommand(cmd);
     loraPrint(DEFAULT_DEBUGTIME);
 }
@@ -476,7 +476,7 @@ void LoRaWanClass::setReceiveWindowSecond(float frequency, _spreading_factor_t s
     char cmd[32];
     
     memset(cmd, 0, 32);
-    sprintf(cmd, "AT+RXWIN2=%d.%d,%d,%d\r\n", (short)frequency, short(frequency * 10) % 10, spreadingFactor, bandwidth);
+    sprintf(cmd, "AT+RXWIN2=%.3f,%d,%d\r\n", frequency, spreadingFactor, bandwidth);
     sendCommand(cmd);
     loraPrint(DEFAULT_DEBUGTIME);
 }

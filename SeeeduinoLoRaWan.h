@@ -27,7 +27,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.1  USA
 
-  Modified for LoRa@VSB by Ondřej Knebl, 2. 11. 2023
+  Modified for LoRa@VSB by Ondřej Knebl, 21. 11. 2023
 */
 
 #ifndef _SEEEDUINOLORAWAN_H_
