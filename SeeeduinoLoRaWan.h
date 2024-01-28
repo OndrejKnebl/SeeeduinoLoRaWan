@@ -27,7 +27,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.1  USA
 
-  Modified for LoRa@VSB by Ondřej Knebl, 21. 11. 2023
+  Modified for LoRa@VSB by Ondřej Knebl, 20. 12. 2023
 */
 
 #ifndef _SEEEDUINOLORAWAN_H_
@@ -38,6 +38,8 @@
 
 
 #define SerialLoRa          Serial1
+
+//#define PRINT_TO_SERIAL_MONITOR
 
 #define _DEBUG_SERIAL_      1
 #define DEFAULT_TIMEOUT     5 // second
@@ -405,6 +407,13 @@ class LoRaWanClass
          *  \return Return null
          */
         void setDeviceLowPower(void);
+
+        /**
+         *  \brief Wake up device from low power mode
+         *  
+         *  \return Return null
+         */
+        void setDeviceLowPowerWakeUp(void);
         
         /**
          *  \brief Reset device
@@ -425,7 +434,23 @@ class LoRaWanClass
          *  
          *  \return Return battery voltage
          */
-        short getBatteryVoltage(void);
+        float getBatteryVoltage(void);
+
+        /**
+         *  \brief Read battery status
+         *  
+         *  \return Return false while charging, return true while charge done or no battery insert
+         */
+        bool getBatteryStatus(void);
+
+        /**
+         *  \brief Read module temperature
+         *  
+         *  \return Return module temperature
+         */
+        float getModuleTemperatureC(void);
+
+        bool containsSubstring(const char* buffer, const char* substring);
         
         void loraPrint(unsigned char timeout);
 

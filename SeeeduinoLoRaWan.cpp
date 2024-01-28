@@ -28,7 +28,7 @@
   THE SOFTWARE.1  USA
 
 
-  Modified for LoRa@VSB by Ondřej Knebl, 21. 11. 2023
+  Modified for LoRa@VSB by Ondřej Knebl, 20. 12. 2023
 */
 
 #include "SeeeduinoLoRaWan.h"
@@ -48,6 +48,7 @@ void LoRaWanClass::init(void)
 
 void LoRaWanClass::setEU433(void)
 {
+    delay(500);
     setDataRate(EU433);
     delay(500);
 
@@ -79,6 +80,7 @@ void LoRaWanClass::setEU433(void)
 
 void LoRaWanClass::setEU868(void)
 {
+    delay(500);
     setDataRate(EU868);
     delay(500);
 
@@ -162,6 +164,7 @@ void LoRaWanClass::setKeysABP(char *DevAddr, char *NwkSKey, char *AppSKey)
         memset(cmd, 0, 64);
         sprintf(cmd, "AT+ID=DevAddr,\"%s\"\r\n", DevAddr);
         sendCommand(cmd);
+        delay(DEFAULT_TIMEWAIT);
         loraPrint(DEFAULT_DEBUGTIME);
     }
 
@@ -170,6 +173,7 @@ void LoRaWanClass::setKeysABP(char *DevAddr, char *NwkSKey, char *AppSKey)
         memset(cmd, 0, 64);
         sprintf(cmd, "AT+KEY=NWKSKEY,\"%s\"\r\n", NwkSKey);
         sendCommand(cmd);
+        delay(DEFAULT_TIMEWAIT);
         loraPrint(DEFAULT_DEBUGTIME);
     }
     
@@ -178,6 +182,7 @@ void LoRaWanClass::setKeysABP(char *DevAddr, char *NwkSKey, char *AppSKey)
         memset(cmd, 0, 64);
         sprintf(cmd, "AT+KEY=APPSKEY,\"%s\"\r\n", AppSKey);
         sendCommand(cmd);
+        delay(DEFAULT_TIMEWAIT);
         loraPrint(DEFAULT_DEBUGTIME);
     }
 }
@@ -186,15 +191,20 @@ void LoRaWanClass::setKeysABP(char *DevAddr, char *NwkSKey, char *AppSKey)
 void LoRaWanClass::setDataRate(_physical_type_t physicalType)
 {
     char cmd[32];
-    
-    if(physicalType == EU433)sendCommand("AT+DR=EU433\r\n");
-    else if(physicalType == EU868)sendCommand("AT+DR=EU868\r\n");
-    delay(DEFAULT_TIMEWAIT);
-    
     memset(cmd, 0, 32);
-    sprintf(cmd, "AT+DR=%s\r\n", physicalType);
-    sendCommand(cmd);
-    loraPrint(DEFAULT_DEBUGTIME);
+    
+    if(physicalType == EU433)
+    {
+        sprintf(cmd, "AT+DR=%s\r\n", "EU433");
+        sendCommand(cmd);
+        delay(DEFAULT_TIMEWAIT);
+        loraPrint(DEFAULT_DEBUGTIME);
+    } else if(physicalType == EU868) {
+        sprintf(cmd, "AT+DR=%s\r\n", "EU868");
+        sendCommand(cmd);
+        delay(DEFAULT_TIMEWAIT);
+        loraPrint(DEFAULT_DEBUGTIME);
+    }
 }
 
 
@@ -515,7 +525,7 @@ void LoRaWanClass::setReceiveWindowDelay(_window_delay_t command, unsigned short
 void LoRaWanClass::setClassType(_class_type_t type)
 {
     if(type == CLASS_A)sendCommand("AT+CLASS=A\r\n");
-    else if(type == CLASS_C)sendCommand("AT+CLASS=B\r\n");
+    else if(type == CLASS_B)sendCommand("AT+CLASS=B\r\n");
     else if(type == CLASS_C)sendCommand("AT+CLASS=C\r\n");
     loraPrint(DEFAULT_DEBUGTIME);
 }
@@ -538,20 +548,31 @@ bool LoRaWanClass::setOTAAJoin(_otaa_join_cmd_t command, unsigned char timeout)
     delay(DEFAULT_TIMEWAIT);
     
     memset(_buffer, 0, BEFFER_LENGTH_MAX);
+    readBuffer(_buffer, BEFFER_LENGTH_MAX, 1);
+
+    ptr = strstr(_buffer, "+JOIN: Joined already");
+    if(ptr)return true;
+
+    memset(_buffer, 0, BEFFER_LENGTH_MAX);
     readBuffer(_buffer, BEFFER_LENGTH_MAX, timeout);
 
-    ptr = strstr(_buffer, "+JOIN: Join failed");
-    if(ptr)return false;
-    ptr = strstr(_buffer, "+JOIN: LoRaWAN modem is busy");
-    if(ptr)return false;
+    ptr = strstr(_buffer, "+JOIN: Network joined");
+    if(ptr)return true;
     
-    return true;
+    return false;
 }
 
 
 void LoRaWanClass::setDeviceLowPower(void)
 {
     sendCommand("AT+LOWPOWER\r\n");
+    loraPrint(DEFAULT_DEBUGTIME);
+}
+
+
+void LoRaWanClass::setDeviceLowPowerWakeUp(void)
+{
+    sendCommand("A");
     loraPrint(DEFAULT_DEBUGTIME);
 }
 
@@ -572,17 +593,74 @@ void LoRaWanClass::setDeviceDefault(void)
 }
 
 
-short LoRaWanClass::getBatteryVoltage(void)
+float LoRaWanClass::getBatteryVoltage(void)
 {
-    int battery;
+    float batteryVoltage = 0.0;
+
+    batteryVoltage = analogRead(BATTERY_POWER_PIN);
+    batteryVoltage = batteryVoltage * 11.0;
+    batteryVoltage = batteryVoltage * 3.3;    // reference voltage 3.3 V
+    batteryVoltage = batteryVoltage / 1024.0;   // convert to voltage
     
-    pinMode(CHARGE_STATUS_PIN, OUTPUT);
-    digitalWrite(CHARGE_STATUS_PIN, LOW);
-    delay(DEFAULT_TIMEWAIT);
-    battery = (analogRead(BATTERY_POWER_PIN) * 3300 * 11) >> 10;
+    return batteryVoltage;
+}
+
+
+bool LoRaWanClass::getBatteryStatus(void)
+{
     pinMode(CHARGE_STATUS_PIN, INPUT);
-    
-    return battery;
+    delay(DEFAULT_TIMEWAIT);
+    bool batteryStatus = digitalRead(CHARGE_STATUS_PIN);
+
+    return batteryStatus;
+}
+
+
+float LoRaWanClass::getModuleTemperatureC(void)
+{
+    float moduleTemperatureC = 0.0;
+
+    sendCommand("AT+TEMP\r\n");
+
+    memset(_buffer, 0, BEFFER_LENGTH_MAX);
+    readBuffer(_buffer, BEFFER_LENGTH_MAX, 1);
+
+    if (containsSubstring(_buffer, "+TEMP:")) {
+        // Find the colon and parse the temperature
+        int colonIndex = -1;
+        for(int i = 0; _buffer[i] != '\0' && i < sizeof(_buffer); i++) {
+            if(_buffer[i] == ':') {
+                colonIndex = i;
+                break;
+            }
+        }
+
+        if (colonIndex != -1) {
+            sscanf(&_buffer[colonIndex + 1], "%f", &moduleTemperatureC);
+        }
+    }
+   return moduleTemperatureC;
+}
+
+
+bool LoRaWanClass::containsSubstring(const char* buffer, const char* substring)
+{
+    const char* temp = buffer;
+
+    while (*temp) {
+        bool matches = true;
+        for (int i = 0; substring[i]; i++) {
+            if (temp[i] != substring[i]) {
+                matches = false;
+                break;
+            }
+        }
+        if (matches) {
+            return true;
+        }
+        temp++;
+    }
+    return false;
 }
 
 
@@ -614,10 +692,13 @@ short LoRaWanClass::readBuffer(char *buffer, short length, unsigned char timeout
         if(timerEnd - timerStart > 1000 * timeout)break;
     }
 
+    #ifdef PRINT_TO_SERIAL_MONITOR
     SerialUSB.print(buffer);
+    #endif
 
     return i;
 }
+
 
 void LoRaWanClass::loraPrint(unsigned char timeout)
 {
@@ -627,7 +708,14 @@ void LoRaWanClass::loraPrint(unsigned char timeout)
     
     while(1)
     {
-        while(SerialLoRa.available()) SerialUSB.write(SerialLoRa.read());  
+        while(SerialLoRa.available())
+        {
+            #ifdef PRINT_TO_SERIAL_MONITOR
+            SerialUSB.write(SerialLoRa.read());
+            #else
+            SerialLoRa.read();
+            #endif
+        }
         
         timerEnd = millis();
         if(timerEnd - timerStart > timeout)break;

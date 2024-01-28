@@ -1,5 +1,5 @@
 /*******************************************************************************
- * The Things Network - Seeeduino - EU433, Class A, OTAA
+ * The Things Network - Seeeduino - EU433, Class A, ABP
  * 
  * Copyright (c) 2023 Ondřej Knebl, LoRa@VSB
  *
@@ -20,15 +20,14 @@ LoRaWanClass lora;
 // to disable printing to Serial Monitor.
 
 //-------------- Here change your keys --------------
-#define APP_EUI "0000000000000000"
-#define DEV_EUI "0000000000000000"
-#define APP_KEY "00000000000000000000000000000000"
+#define DEV_ADDR "00000000"
+#define NWK_S_KEY "00000000000000000000000000000000"
+#define APP_S_KEY "00000000000000000000000000000000"
 //---------------------------------------------------
 
 const unsigned TX_INTERVAL = 300;                                // Transmission interval in seconds
 static uint8_t mydata[] = "Hello, LoRa!";
 
-bool isDelay = true;
 
 void sendAndReceiveData() {
   
@@ -61,21 +60,6 @@ void sendAndReceiveData() {
 }
 
 
-void checkJoin(unsigned char timeout) {
-    while(true) {
-        if(lora.setOTAAJoin(JOIN, timeout)) {
-            if(isDelay) {
-                delay(15000);
-            }
-            isDelay = false;
-            break;
-        } else {
-            isDelay = true;
-        }
-    }
-}
-
-
 void setup(void) {
     lora.init();
 
@@ -84,19 +68,15 @@ void setup(void) {
 
     lora.setDeviceReset();
     lora.getVersion();
-    lora.setActivation(LWOTAA);
-    lora.setKeysOTAA(APP_EUI, DEV_EUI, APP_KEY);
+    lora.setActivation(LWABP);
+    lora.setKeysABP(DEV_ADDR, NWK_S_KEY, APP_S_KEY);
     lora.setEU433();
     lora.setClassType(CLASS_A);
     lora.setPort(1);
-
-    checkJoin(10);
 }
 
 void loop(void) {
     
-    checkJoin(10);
-
     sendAndReceiveData();
 
     delay(TX_INTERVAL*1000);

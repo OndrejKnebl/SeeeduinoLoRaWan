@@ -1,5 +1,5 @@
 /*******************************************************************************
- * The Things Network - OTAA Seeeduino
+ * The Things Network - Seeeduino - EU868, Class A, OTAA
  * 
  * Copyright (c) 2023 Ondřej Knebl, LoRa@VSB
  *
@@ -9,11 +9,15 @@
  * including, but not limited to, copying, modification and redistribution.
  * NO WARRANTY OF ANY KIND IS PROVIDED.
  * 
- * Hello, LoRa!, 2. 11. 2023
+ * Hello, LoRa!, 20. 12. 2023
  *******************************************************************************/
 
 #include <SeeeduinoLoRaWan.h>
 LoRaWanClass lora;
+
+// Comment out the line #define PRINT_TO_SERIAL_MONITOR
+// in "C:\Users\User\Documents\Arduino\libraries\SeeeduinoLoRaWan\SeeeduinoLoRaWan.h"
+// to disable printing to Serial Monitor.
 
 //-------------- Here change your keys --------------
 #define APP_EUI "0000000000000000"
@@ -24,6 +28,7 @@ LoRaWanClass lora;
 const unsigned TX_INTERVAL = 300;                                // Transmission interval in seconds
 static uint8_t mydata[] = "Hello, LoRa!";
 
+bool isDelay = true;
 
 void sendAndReceiveData() {
   
@@ -56,13 +61,28 @@ void sendAndReceiveData() {
 }
 
 
+void checkJoin(unsigned char timeout) {
+    while(true) {
+        if(lora.setOTAAJoin(JOIN, timeout)) {
+            if(isDelay) {
+                delay(15000);
+            }
+            isDelay = false;
+            break;
+        } else {
+            isDelay = true;
+        }
+    }
+}
+
+
 void setup(void) {
     lora.init();
 
     SerialUSB.begin(9600);
     while(!SerialUSB);     
 
-    lora.setDeviceReset();
+    lora.setDeviceDefault();
     lora.getVersion();
     lora.setActivation(LWOTAA);
     lora.setKeysOTAA(APP_EUI, DEV_EUI, APP_KEY);
@@ -70,12 +90,12 @@ void setup(void) {
     lora.setClassType(CLASS_A);
     lora.setPort(1);
 
-    while(!lora.setOTAAJoin(JOIN, 10));
+    checkJoin(10);
 }
 
 
 void loop(void) {
-    while(!lora.setOTAAJoin(JOIN, 1));
+    checkJoin(10);
 
     sendAndReceiveData();
 
