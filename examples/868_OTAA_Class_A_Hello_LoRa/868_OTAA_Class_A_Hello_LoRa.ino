@@ -9,7 +9,7 @@
  * including, but not limited to, copying, modification and redistribution.
  * NO WARRANTY OF ANY KIND IS PROVIDED.
  * 
- * Hello, LoRa!, 20. 12. 2023
+ * Hello, LoRa!, 27. 10. 2024
  *******************************************************************************/
 
 #include <SeeeduinoLoRaWan.h>
@@ -52,7 +52,8 @@ void sendAndReceiveData() {
             SerialUSB.print("Data: ");
             for(unsigned char i = 0; i < length; i ++) {
                 SerialUSB.print("0x");
-                SerialUSB.print(buffer[i], HEX);
+                SerialUSB.print((buffer[i] >> 4) & 0x0F, HEX);
+                SerialUSB.print(buffer[i] & 0x0F, HEX);
                 SerialUSB.print(" ");
             }
             SerialUSB.println();
@@ -80,7 +81,7 @@ void setup(void) {
     lora.init();
 
     SerialUSB.begin(9600);
-    while(!SerialUSB);     
+    //while(!SerialUSB);     
 
     lora.setDeviceDefault();
     lora.getVersion();

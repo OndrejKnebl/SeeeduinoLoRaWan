@@ -39,7 +39,7 @@
 
 #define SerialLoRa          Serial1
 
-//#define PRINT_TO_SERIAL_MONITOR
+#define PRINT_TO_SERIAL_MONITOR
 
 #define _DEBUG_SERIAL_      1
 #define DEFAULT_TIMEOUT     5 // second
@@ -276,6 +276,7 @@ class LoRaWanClass
          *  \return Return bool. Ture : transmit done, false : transmit failed
          */
         bool transmitProprietaryPacket(char *buffer, unsigned char timeout = DEFAULT_TIMEOUT);
+
         /**
          *  \brief Transmit the proprietary data
          *  
