@@ -27,7 +27,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.1  USA
 
-  Modified for LoRa@VSB by Ondřej Knebl, 20. 12. 2023
+  Modified for LoRa@VSB by Ondřej Knebl, 9. 12. 2024
 */
 
 #ifndef _SEEEDUINOLORAWAN_H_
@@ -401,7 +401,30 @@ class LoRaWanClass
          *  \return Return null
          */
         void setClassType(_class_type_t type);
-        
+
+        /**
+         *  \brief Set beacon and ping slot configuration
+         * 
+         *  \param periodicity The ping slot period factor (2^periodicity seconds)
+         *  
+         *  \return Return null
+         */
+        void setBeaconAndPingSlot(int periodicity);
+
+        /**
+         *  \brief Wait for Class B setup
+         *  
+         *  \return True if successful
+         */
+        bool checkClassBDone();
+
+        /**
+         *  \brief Check for beacon loss
+         *  
+         *  \return True if beacon lost
+         */
+        bool checkBeaconLost();
+
         /**
          *  \brief Set device into low power mode
          *  

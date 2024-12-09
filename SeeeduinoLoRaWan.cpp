@@ -28,7 +28,7 @@
   THE SOFTWARE.1  USA
 
 
-  Modified for LoRa@VSB by Ondřej Knebl, 20. 12. 2023
+  Modified for LoRa@VSB by Ondřej Knebl, 9. 12. 2024
 */
 
 #include "SeeeduinoLoRaWan.h"
@@ -522,12 +522,106 @@ void LoRaWanClass::setReceiveWindowDelay(_window_delay_t command, unsigned short
 }
 
 
+void LoRaWanClass::setBeaconAndPingSlot(int periodicity)
+{
+    char cmd[32];
+    memset(cmd, 0, 32);
+
+    sprintf(cmd, "AT+BEACON=%d\r\n", periodicity);
+
+    sendCommand(cmd);
+    loraPrint(DEFAULT_DEBUGTIME);
+}
+
+
 void LoRaWanClass::setClassType(_class_type_t type)
 {
     if(type == CLASS_A)sendCommand("AT+CLASS=A\r\n");
-    else if(type == CLASS_B)sendCommand("AT+CLASS=B\r\n");
+    else if(type == CLASS_B)
+    {
+        while (true)
+        {
+            sendCommand("AT+BEACON=DMMUL,1,15\r\n");
+            loraPrint(DEFAULT_DEBUGTIME);
+
+            sendCommand("AT+CLASS=B\r\n");
+            loraPrint(DEFAULT_DEBUGTIME);
+
+            if (checkClassBDone()) 
+            {
+                break;
+            }
+        }
+    }
     else if(type == CLASS_C)sendCommand("AT+CLASS=C\r\n");
     loraPrint(DEFAULT_DEBUGTIME);
+}
+
+
+bool LoRaWanClass::checkClassBDone()
+{
+    char *ptr_locked = nullptr;
+    char *ptr_done = nullptr;
+    char *ptr_failed = nullptr;
+
+    while (true)
+    {
+        memset(_buffer, 0, BEFFER_LENGTH_MAX);
+        readBuffer(_buffer, BEFFER_LENGTH_MAX, 1);
+
+        ptr_locked = strstr(_buffer, "+BEACON: LOCKED");
+        if (ptr_locked)
+        {
+            break;
+        }
+
+        ptr_failed = strstr(_buffer, "+BEACON: FAILED");
+        if (ptr_failed)
+        {
+            return false;
+        }
+
+        delay(1);
+    }
+
+    while (true)
+    {
+        memset(_buffer, 0, BEFFER_LENGTH_MAX);
+        readBuffer(_buffer, BEFFER_LENGTH_MAX, 1);
+
+        ptr_done = strstr(_buffer, "+BEACON: DONE");
+        if (ptr_done)
+        {
+            return true;
+        }
+
+        ptr_failed = strstr(_buffer, "+BEACON: FAILED");
+        if (ptr_failed)
+        {
+            return false;
+        }
+
+        delay(1);
+    }
+}
+
+
+bool LoRaWanClass::checkBeaconLost()
+{
+    char *ptr_class = nullptr;
+
+    sendCommand("AT+CLASS\r\n");
+    loraPrint(DEFAULT_DEBUGTIME);
+
+    memset(_buffer, 0, BEFFER_LENGTH_MAX);
+    readBuffer(_buffer, BEFFER_LENGTH_MAX, 1);
+
+    ptr_class = strstr(_buffer, "+CLASS: A");
+    if (ptr_class)
+    {
+        return true;
+    }
+    return false;
 }
 
 
