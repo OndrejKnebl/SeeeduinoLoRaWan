@@ -64,7 +64,7 @@ void setup(void) {
     lora.init();
 
     SerialUSB.begin(9600);
-    while(!SerialUSB);     
+    //while(!SerialUSB);     
 
     lora.setDeviceReset();
     lora.getVersion();
