@@ -30,7 +30,6 @@ CayenneLPP lpp(51);                   // https://lora.vsb.cz/index.php/cayenne-l
 //---------------------------------------------------
 
 unsigned TX_INTERVAL = 300;                                       // Transmission interval in seconds
-static uint8_t mydata[] = "Hello, LoRa!";
 
 // Timer
 unsigned long previousMillis = 0;                                 // Previous time
